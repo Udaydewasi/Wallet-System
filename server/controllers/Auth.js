@@ -18,8 +18,6 @@ exports.signup = async (req, res) => {
       email,
       password,
       confirmPassword,
-      accountType,
-      contactNumber,
       otp,
     } = req.body
     // Check if All Details are there or not
