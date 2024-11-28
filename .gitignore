@@ -6,3 +6,6 @@ node_modules/
 
 # Ignore environment files
 .env
+
+controllers/WalletController.js
+Wallet/models

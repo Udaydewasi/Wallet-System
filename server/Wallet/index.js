@@ -1,5 +1,5 @@
 const express = require('express');
-const walletRoutes = require('./routes/walletRoutes');
+// const walletRoutes = require('./routes/walletRoutes');
 const transactionRoutes = require('./routes/transactionRoutes');
 const { connectDB } = require("./config/db"); // PostgreSQL connection
 
@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 3004;
 connectDB();
 
 // Setting up routes
-app.use("/api/v1/wallet", walletRoutes); // Wallet routes
+// app.use("/api/v1/wallet", walletRoutes); // Wallet routes
 app.use('/api/v1/transactions', transactionRoutes); //transaction routes
 
 // Health check endpoint
