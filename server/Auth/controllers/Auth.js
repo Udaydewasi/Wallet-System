@@ -81,6 +81,8 @@ exports.signup = async (req, res) => {
       image: "",
     })
 
+    //Wallet creation logic will be here.....................
+
     return res.status(200).json({
       success: true,
       user,
