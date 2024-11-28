@@ -1,11 +1,11 @@
 const { query } = require('../config/db');  // Import query from the db config
 
 exports.getBalance = async (req, res) => {
-  const userId = req.userId;  // User ID from JWT (Authenticated User)
+  const {user_id} = req.body;  // User ID from JWT (Authenticated User)
 
   try {
     // 1. Fetch the wallet balance for the given userId
-    const result = await query('SELECT balance FROM wallets WHERE user_id = $1', [userId]);
+    const result = await query('SELECT balance FROM wallets WHERE user_id = $1', [user_id]);
 
     // 2. If wallet not found
     if (result.rows.length === 0) {
