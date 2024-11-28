@@ -6,7 +6,8 @@ const pool = new Pool({
     host: process.env.DB_HOST || 'localhost',      // Replace with your PostgreSQL host
     database: process.env.DB_NAME || 'wallet_system', // Replace with your database name
     password: process.env.DB_PASSWORD || 'Uday@1234', // Replace with your PostgreSQL password
-    port: process.env.DB_PORT || 5432              // Default PostgreSQL port
+    port: process.env.DB_PORT || 5432,              // Default PostgreSQL port
+    connectionTimeoutMillis: 5000,
 });
 
 const connectDB = async () => {
@@ -33,6 +34,7 @@ const query = async (text, params) => {
         client.release(); // Release the connection back to the pool
     }
 };
+module.exports = {query};
 
 // Transaction utility function
 const transaction = async (callback) => {
@@ -50,4 +52,9 @@ const transaction = async (callback) => {
     }
 };
 
+process.on('exit', () => {
+    console.log('Closing PostgreSQL connection pool...');
+    pool.end(); // Ensure the pool is closed when the server shuts down
+  });
+  
 module.exports = {connectDB, query, transaction };
