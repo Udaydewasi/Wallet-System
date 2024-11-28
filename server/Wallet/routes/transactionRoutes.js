@@ -1,12 +1,14 @@
 const express = require('express');
-const { credit } = require('../controllers/Credit');
-const {deposit} = require('../controllers/Deposit');
+const { creditFunds } = require('../controllers/Credit');
+const {depositFunds} = require('../controllers/Deposit');
 const {getBalance} = require('../controllers/getting');
+const {createWallet} = require('../controllers/walletCreation');
 
 const router = express.Router();
 
-router.post('/deposit', deposit);
-router.post('/credit', credit);
+router.post('/deposit', depositFunds);
+router.post('/credit', creditFunds);
 router.get('/getbalance', getBalance);
+router.post('/walletCreation', createWallet);
 
 module.exports = router;

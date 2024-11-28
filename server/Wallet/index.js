@@ -16,7 +16,7 @@ connectDB();
 
 // Setting up routes
 // app.use("/api/v1/wallet", walletRoutes); // Wallet routes
-app.use('/api/v1/transactions', transactionRoutes); //transaction routes
+app.use('/api/v1/wallet', transactionRoutes); //transaction routes
 
 // Health check endpoint
 app.get("/", (req, res) => {
