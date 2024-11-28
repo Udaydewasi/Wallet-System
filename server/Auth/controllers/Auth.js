@@ -77,7 +77,6 @@ exports.signup = async (req, res) => {
       firstName,
       lastName,
       email,
-      contactNumber,
       password: hashedPassword,
       image: "",
     })
