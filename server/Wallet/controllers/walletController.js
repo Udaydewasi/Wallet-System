@@ -1,5 +1,28 @@
 const { query } = require('../config/db');
 
+// const Wallet = require("../models/Wallet");
+
+exports.createWallet = async (userId) => {
+  try {
+    // Check if the wallet already exists for the user
+    const existingWallet = await Wallet.findOne({ userId });
+    if (existingWallet) {
+      console.log("Wallet already exists for this user");
+      return;
+    }
+
+    // Create a new wallet for the user
+    const newWallet = await Wallet.create({
+      userId: userId,
+      balance: 0.00, // Initial balance is 0
+    });
+
+    console.log("Wallet created successfully:", newWallet);
+  } catch (error) {
+    console.error("Error creating wallet:", error.message);
+  }
+};
+
 exports.getBalance = async (req, res) => {
     const userId = req.user.id; // Get user ID from JWT
 
