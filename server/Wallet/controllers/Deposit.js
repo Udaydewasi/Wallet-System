@@ -34,6 +34,12 @@ exports.depositFunds = async (req, res) => {
     // 5. Return the updated wallet balance
     const updatedBalance = updateResult.rows[0].balance;
 
+    //Insert each transaction in the history table    
+    await query(
+      'INSERT INTO transactions (wallet_id, type, amount) VALUES ($1, $2, $3)',
+      [user_id, 'deposited', Amount]
+    );
+
     return res.status(200).json({
       success: true,
       message: `Deposited ${Amount} into wallet`,

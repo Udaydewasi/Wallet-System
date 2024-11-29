@@ -41,6 +41,13 @@ exports.creditFunds = async (req, res) => {
     // 5. Return the updated wallet balance
     const updatedBalance = updateResult.rows[0].balance;
 
+    //insert transaction in the history table
+
+    await query(
+      'INSERT INTO transactions (wallet_id, type, amount) VALUES ($1, $2, $3)',
+      [user_id, 'credited', Amount]
+    );
+
     return res.status(200).json({
       success: true,
       message: `Credited ${Amount} from wallet`,
@@ -48,6 +55,9 @@ exports.creditFunds = async (req, res) => {
     });
   } catch (error) {
     console.error("Error crediting funds:", error.message);
-    return res.status(500).json({ success: false, message: "Error crediting funds" });
+    return res.status(500).json({
+      success: false, 
+      message: "Error crediting funds" 
+    });
   }
 };
