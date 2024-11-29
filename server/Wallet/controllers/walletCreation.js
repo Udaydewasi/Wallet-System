@@ -3,7 +3,7 @@ const { query } = require("../config/db"); // PostgreSQL query function
 exports.createWallet = async (req, res) => {
   try {
     // Extract user_id from the request body (since you're passing it from Postman)
-    const { user_id } = req.body;
+    const user_id = req.user_id;
 
     console.log("Creating wallet for user:", user_id);
 

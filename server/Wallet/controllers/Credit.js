@@ -2,7 +2,7 @@ const { query } = require('../config/db');  // Import query from your db config
 
 exports.creditFunds = async (req, res) => {
   const { amount } = req.body;  // Amount to deposit
-  const {user_id} = req.body;    // User ID from JWT (Authenticated User)
+  const user_id = req.user_id;    // User ID from JWT (Authenticated User)
 
   const Amount = Number(amount);
   // Validate the amount
