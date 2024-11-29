@@ -82,6 +82,7 @@ exports.signup = async (req, res) => {
     })
 
     //Wallet creation logic will be here.....................
+    
 
     return res.status(200).json({
       success: true,
@@ -127,7 +128,7 @@ exports.login = async (req, res) => {
     // Generate JWT token and Compare Password
     if (await bcrypt.compare(password, user.password)) {
       const token = jwt.sign(
-        { email: user.email},
+        { user_id: user._id, email: user.email},
         process.env.JWT_SECRET,
         {
           expiresIn: "48h",
