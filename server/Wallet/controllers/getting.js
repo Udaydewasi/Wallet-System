@@ -1,7 +1,7 @@
 const { query, transaction } = require('../config/db');  // Import query from the db config
 
 exports.getBalance = async (req, res) => {
-  const {user_id} = req.body;  // User ID from JWT (Authenticated User)
+  const user_id = req.user_id;  // User ID from JWT (Authenticated User)
 
   try {
     // 1. Fetch the wallet balance for the given userId
