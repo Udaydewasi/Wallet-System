@@ -1,8 +1,9 @@
 const { query } = require('../config/db');  // Assuming query function from your config/db.js
+const logger = require('../../../logs/logger');
 
 exports.depositFunds = async (req, res) => {
-  const { amount } = req.body;  // Amount to deposit
-  const user_id = req.user_id;   // User ID from JWT (Authenticated User)
+  const { amount, user_id } = req.body;  // Amount to deposit
+  // const user_id = req.user_id;   // User ID from JWT (Authenticated User)
 
   const Amount = Number(amount);
   // Validate the amount
@@ -39,6 +40,11 @@ exports.depositFunds = async (req, res) => {
       'INSERT INTO transactions (wallet_id, type, amount) VALUES ($1, $2, $3)',
       [user_id, 'deposited', Amount]
     );
+
+    logger.info('Balance deposited');
+    // Emit event to notify clients of the updated balance
+    const io = require('../utils/socket').getIO(); // Get Socket.IO instance
+    io.emit('walletUpdated', { user_id, balance: newBalance });
 
     return res.status(200).json({
       success: true,

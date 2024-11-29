@@ -48,6 +48,10 @@ exports.creditFunds = async (req, res) => {
       [user_id, 'credited', Amount]
     );
 
+     // Emit event to notify clients of the updated balance
+     const io = require('../utils/socket').getIO(); // Get Socket.IO instance
+     io.emit('walletUpdated', { user_id, balance: newBalance });
+
     return res.status(200).json({
       success: true,
       message: `Credited ${Amount} from wallet`,

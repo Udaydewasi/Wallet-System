@@ -7,9 +7,9 @@ const {verifyToken} = require('../middlewares/verifyToken');
 
 const router = express.Router();
 
-router.post('/deposit', verifyToken, depositFunds);
-router.post('/credit', verifyToken, creditFunds);
-router.get('/getbalance', verifyToken, getBalance);
+router.post('/deposit', depositFunds);
+router.post('/credit', creditFunds);
+router.get('/getbalance', getBalance);
 router.get('/gethistory', verifyToken, getHistory);
 router.post('/walletCreation', verifyToken, createWallet);
 
