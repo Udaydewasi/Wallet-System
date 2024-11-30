@@ -87,7 +87,7 @@ exports.transferFunds = async (req, res) => {
           `Funds Transferred`,
           transactionEmail('Debited', Amount, sender_id)
         );
-      }
+      }  
       if (receiverEmail) {
         mailSender(
           receiverEmail,

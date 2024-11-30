@@ -23,7 +23,7 @@ exports.depositFunds = async (req, res) => {
       return res.status(404).json({ 
         success: false, 
         message: "Wallet not found" 
-      });
+      }); 
     }
 
     const wallet = result.rows[0];  // Get the wallet balance

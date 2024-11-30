@@ -14,5 +14,5 @@ router.post('/transfer', transferFunds);
 router.get('/getbalance', getBalance);
 router.get('/gethistory', verifyToken, getHistory);
 router.post('/walletCreation', verifyToken, createWallet);
-
+ 
 module.exports = router;

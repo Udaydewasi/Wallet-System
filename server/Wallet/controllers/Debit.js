@@ -1,7 +1,7 @@
 const { query } = require('../config/db');  // Import query from your db config
 const {mailSender} = require('../utils/mailSender');
 const {transactionEmail} = require('../mailTemplate/transaction');
-
+ 
 exports.debitFunds = async (req, res) => {
   const { amount, user_id, email } = req.body;  // Amount to deposit
   // const user_id = req.user_id;    // User ID from JWT (Authenticated User)
