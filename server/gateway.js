@@ -18,27 +18,28 @@ const limiter = rateLimit({
 app.use(limiter); // Apply rate limiting globally
 
 // Proxy setup for Auth and Wallet microservices
-const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || 'http://localhost:4000';
-const WALLET_SERVICE_URL = process.env.WALLET_SERVICE_URL || 'http://localhost:4001';
+const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || 'http://127.0.0.1:4000';
+const WALLET_SERVICE_URL = process.env.WALLET_SERVICE_URL || 'http://127.0.0.1:4001';
 const PORT = process.env.GATEWAY_PORT || 3000;
 
 
 // Route requests to the appropriate service
-app.use('/api/v1/auth', createProxyMiddleware({
+app.use('/authgate', createProxyMiddleware({
   target: AUTH_SERVICE_URL,
   changeOrigin: true,
   pathRewrite: {
-    '^/api/v1/auth': '/api/v1/auth', // rewrite paths if needed
+    '^/authgate': '/authgate', // rewrite paths if needed
   },
 }));
 
-app.use('/api/v1/wallet', createProxyMiddleware({
+app.use('/walletgate', createProxyMiddleware({
   target: WALLET_SERVICE_URL,
   changeOrigin: true,
   pathRewrite: {
-    '^/api/v1/wallet': '/api/v1/wallet', // rewrite paths if needed
+    '^/walletgate': '/walletgate', // No path change
   },
 }));
+
 
 // Health check endpoint
 app.get('/', (req, res) => {
