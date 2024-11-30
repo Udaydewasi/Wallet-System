@@ -1,8 +1,11 @@
 const { query } = require('../config/db');  // Import query from your db config
+const {mailSender} = require('../utils/mailSender');
+const {transactionEmail} = require('../mailTemplate/transaction');
 
-exports.creditFunds = async (req, res) => {
-  const { amount } = req.body;  // Amount to deposit
-  const user_id = req.user_id;    // User ID from JWT (Authenticated User)
+exports.debitFunds = async (req, res) => {
+  const { amount, user_id, email } = req.body;  // Amount to deposit
+  // const user_id = req.user_id;    // User ID from JWT (Authenticated User)
+  // const email = req.email;
 
   const Amount = Number(amount);
   // Validate the amount
@@ -45,23 +48,34 @@ exports.creditFunds = async (req, res) => {
 
     await query(
       'INSERT INTO transactions (wallet_id, type, amount) VALUES ($1, $2, $3)',
-      [user_id, 'credited', Amount]
+      [user_id, 'debited', Amount]
     );
 
      // Emit event to notify clients of the updated balance
      const io = require('../utils/socket').getIO(); // Get Socket.IO instance
      io.emit('walletUpdated', { user_id, balance: newBalance });
+    
+     //mail to inform to account holder
+     await mailSender(
+      email,
+      `Payment Debited`,
+      transactionEmail(
+        'Debited',
+        amount,
+        user_id
+      )
+    );
 
     return res.status(200).json({
       success: true,
-      message: `Credited ${Amount} from wallet`,
+      message: `Debited ${Amount} from wallet`,
       balance: updatedBalance,
     });
   } catch (error) {
-    console.error("Error crediting funds:", error.message);
+    console.error("Error debiting funds:", error.message);
     return res.status(500).json({
       success: false, 
-      message: "Error crediting funds" 
+      message: "Error debiting funds" 
     });
   }
 };
