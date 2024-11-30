@@ -3,6 +3,7 @@ const http = require('http'); // To create an HTTP server
 const transactionRoutes = require('./routes/transactionRoutes');
 const { connectDB } = require('./config/db'); // PostgreSQL connection
 const { init } = require('./utils/socket'); // Import the socket initializer
+const logger = require('../../logs/logger');
 
 require('dotenv').config();
 
@@ -30,6 +31,11 @@ app.get('/', (req, res) => {
 
 // Define routes
 app.use('/api/v1/wallet', transactionRoutes);
+// app.use((req, res, next) => {
+//   logger.info(`Wallet Service received request: ${req.method} ${req.originalUrl}`);
+//   next();
+// });
+
 
 // Start the server
 server.listen(PORT, () => {
