@@ -1,6 +1,5 @@
 const { query } = require('../config/db');  // Assuming query function from your config/db.js
 const logger = require('../../../logs/logger');
-<<<<<<< HEAD
 const {mailSender} = require('../utils/mailSender');
 const {transactionEmail} = require('../mailTemplate/transaction');
 
@@ -8,12 +7,6 @@ exports.depositFunds = async (req, res) => {
   const { amount, user_id, email } = req.body;  // Amount to deposit
   // const user_id = req.user_id;   // User ID from JWT (Authenticated User
   // const email = req.email;
-=======
-
-exports.depositFunds = async (req, res) => {
-  const { amount, user_id } = req.body;  // Amount to deposit
-  // const user_id = req.user_id;   // User ID from JWT (Authenticated User)
->>>>>>> fdd81fa7263ed06ce11d313518939018f3edbb95
 
   const Amount = Number(amount);
   // Validate the amount
@@ -27,14 +20,10 @@ exports.depositFunds = async (req, res) => {
 
     if (result.rows.length === 0) {
       // 2. If the wallet is not found
-<<<<<<< HEAD
       return res.status(404).json({ 
         success: false, 
         message: "Wallet not found" 
       }); 
-=======
-      return res.status(404).json({ success: false, message: "Wallet not found" });
->>>>>>> fdd81fa7263ed06ce11d313518939018f3edbb95
     }
 
     const wallet = result.rows[0];  // Get the wallet balance
@@ -58,15 +47,10 @@ exports.depositFunds = async (req, res) => {
       [user_id, 'deposited', Amount]
     );
 
-<<<<<<< HEAD
-=======
-    logger.info('Balance deposited');
->>>>>>> fdd81fa7263ed06ce11d313518939018f3edbb95
     // Emit event to notify clients of the updated balance
     const io = require('../utils/socket').getIO(); // Get Socket.IO instance
     io.emit('walletUpdated', { user_id, balance: newBalance });
 
-<<<<<<< HEAD
     logger.info('Balance deposited');
     
     await mailSender(
@@ -81,8 +65,6 @@ exports.depositFunds = async (req, res) => {
 
     // logger.info("mail is sending......");
 
-=======
->>>>>>> fdd81fa7263ed06ce11d313518939018f3edbb95
     return res.status(200).json({
       success: true,
       message: `Deposited ${Amount} into wallet`,
