@@ -5,7 +5,7 @@ const userRoutes = require("./routes/auth");
 const database = require("./config/database");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
-const { cloudinaryConnect } = require("./config/cloudinary");
+// const { cloudinaryConnect } = require("./config/cloudinary");
 const fileUpload = require("express-fileupload");
 const dotenv = require("dotenv");
 
@@ -34,8 +34,8 @@ app.use(
 	})
 );
 
-// Connecting to cloudinary
-cloudinaryConnect();
+// // Connecting to cloudinary
+// cloudinaryConnect();
 
 // Setting up routes
 app.use("/api/v1/auth", userRoutes);

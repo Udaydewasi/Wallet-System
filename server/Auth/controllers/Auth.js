@@ -4,6 +4,7 @@ const OTP = require("../models/OTP")
 const jwt = require("jsonwebtoken")
 const otpGenerator = require("otp-generator")
 const mailSender = require("../utils/mailSender")
+const logger = require("../../../logs/logger")
 // const Profile = require("../models/Profile")
 require("dotenv").config()
 
@@ -101,6 +102,7 @@ exports.signup = async (req, res) => {
 // Login controller for authenticating users
 exports.login = async (req, res) => {
   try {
+    logger.info("at stage1");
     // Get email and password from request body
     const { email, password } = req.body
 
@@ -112,7 +114,7 @@ exports.login = async (req, res) => {
         message: `Please Fill up All the Required Fields`,
       })
     }
-
+    logger.info("at stage2");
     // Find user with provided email
     const user = await User.findOne({ email });
 
@@ -131,7 +133,7 @@ exports.login = async (req, res) => {
         { user_id: user._id, email: user.email},
         process.env.JWT_SECRET,
         {
-          expiresIn: "36h",
+          expiresIn: "0.1h",
         }
       )
 
@@ -140,7 +142,7 @@ exports.login = async (req, res) => {
       user.password = undefined
       // Set cookie for token and return success response
       const options = {
-        expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+        expires: new Date(Date.now() + 6 * 60* 1000),//3 * 24 * 60 * 60 * 1000
         httpOnly: true,
       }
       res.cookie("token", token, options).status(200).json({

@@ -8,11 +8,11 @@ const {transferFunds} = require('../controllers/transferFund');
 
 const router = express.Router();
 
-router.post('/deposit', depositFunds);
-router.post('/debit', debitFunds);
-router.post('/transfer', transferFunds);
-router.get('/getbalance', getBalance);
-router.get('/gethistory', getHistory);
+router.post('/deposit', verifyToken, depositFunds);
+router.post('/debit', verifyToken, debitFunds);
+router.post('/transfer', verifyToken, transferFunds);
+router.get('/getbalance', verifyToken, getBalance);
+router.get('/gethistory', verifyToken, getHistory);
 router.post('/walletCreation', verifyToken, createWallet);
  
 module.exports = router;

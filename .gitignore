@@ -6,3 +6,5 @@ logs/
 
 # Ignore environment files
 .env
+
+Kafka/

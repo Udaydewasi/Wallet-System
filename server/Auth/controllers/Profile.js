@@ -1,4 +1,7 @@
-  exports.getAllUserDetails = async (req, res) => {
+const { uploadImageToS3 } = require('../utils/s3Uploader');
+
+
+exports.getAllUserDetails = async (req, res) => {
     try {
       const id = req.user.id
       const userDetails = await User.findById(id);
@@ -14,37 +17,43 @@
         message: error.message,
       })
     }
-  }
+ }
   
 
-  exports.updateDisplayPicture = async (req, res) => {
-    try {
-      const displayPicture = req.files.displayPicture
-      const userId = req.user.id
-      const image = await uploadImageToCloudinary(
-        displayPicture,
-        process.env.FOLDER_NAME,
-        1000,
-        1000
-      )
-      console.log(image)
-      const updatedProfile = await User.findByIdAndUpdate(
-        { _id: userId },
-        { image: image.secure_url },
-        { new: true }
-      )
-      res.send({
-        success: true,
-        message: `Image Updated successfully`,
-        data: updatedProfile,
-      })
-    } catch (error) {
-      return res.status(500).json({
-        success: false,
-        message: error.message,
-      })
-    }
+exports.updateDisplayPicture = async (req, res) => {
+  try {
+    const displayPicture = req.files.displayPicture;
+    const userId = req.user.id;
+
+    // Upload image to S3
+    const imageUrl = await uploadImageToS3(
+      displayPicture,
+      process.env.FOLDER_NAME // S3 folder name
+    );
+
+    console.log(imageUrl);
+
+    // Update user profile with the new image URL
+    const updatedProfile = await User.findByIdAndUpdate(
+      userId,
+      { image: imageUrl },
+      { new: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: `Image updated successfully`,
+      data: updatedProfile,
+    });
+  } catch (error) {
+    console.error('Error uploading image:', error.message);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
+};
+
   
 
   exports.deleteAccount = async (req, res) => {
@@ -60,7 +69,7 @@
       }
 
       // Delete Assosiated Profile with the User
-      //Delete the data from postgress
+      //Delete the wallet data from postgress
       //Something missing
 
       // Now Delete User

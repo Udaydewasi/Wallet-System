@@ -1,3 +1,4 @@
+const logger = require("../../../logs/logger");
 const { query } = require("../config/db"); // PostgreSQL query function
 
 exports.createWallet = async (req, res) => {
@@ -5,13 +6,13 @@ exports.createWallet = async (req, res) => {
     // Extract user_id from the request body (since you're passing it from Postman)
     const user_id = req.user_id;
 
-    console.log("Creating wallet for user:", user_id);
+    logger.log("Creating wallet for user:", user_id);
 
     // Check if the wallet already exists for the user
     const existingWalletResult = await query("SELECT * FROM wallets WHERE user_id = $1", [user_id]);
 
     if (existingWalletResult.rows.length > 0) {
-      console.log("Wallet already exists for this user");
+      logger.log("Wallet already exists for this user");
       return res.status(400).json({ message: "Wallet already exists" });
     }
 

@@ -1,40 +1,49 @@
 // Importing required modules
 const jwt = require("jsonwebtoken");
-const dotenv = require("dotenv");
+const logger = require("../../../logs/logger");
+require('dotenv').config();
 
-// Configuring dotenv to load environment variables from .env file
-dotenv.config();
 
 // This function is used as middleware to authenticate user requests
 exports.verifyToken = async (req, res, next) => {
 	try {
-		console.log(req.cookies.token);
-		console.log(req.body.token);
+		logger.info("1working till here....")
 		// Extracting JWT from request cookies, body or header
 		const token =
-  				req.cookies?.token ||
-  				req.body.token ||
+				req.cookies?.token ||
+				req.body?.token ||
   				req.header("Authorization")?.replace("Bearer ", "");
 
-		console.log("Extracted Token: ", token);  // Log the token to see what you are getting
+		
+		logger.info(`Extracted Token: ${token}`);  // Log the token to see what you are getting
 
 
 		// If JWT is missing, return 401 Unauthorized response
 		if (!token) {
 			return res.status(401).json({ success: false, message: `Token Missing` });
 		}
+		logger.info("code working stage3");
 
 		try {
+			logger.info("code working stage4")
 			// Verifying the JWT using the secret key stored in environment variables
 			const decode = await jwt.verify(token, process.env.JWT_SECRET);
-			console.log(decode);
+
+			logger.info("code working stage5")
 			// Storing the decoded JWT payload in the request object for further use
 			req.user_id = decode.user_id;
+
+			logger.info(`userId: ${req.user_id}`);
+			
+			// return res.status(200).json({
+			// 	success: true,
+			// 	message: "Token verified",
+			// });
 		} catch (error) {
 			// If JWT verification fails, return 401 Unauthorized response
 			return res
 				.status(401)
-				.json({ success: false, message: "token is invalid" });
+				.json({ success: false, message: "token is invailid" });
 		}
 
 		// If JWT is valid, move on to the next middleware or request handler
