@@ -4,8 +4,8 @@ const redisClient = require('../config/redisClient');
 
 
 exports.getBalance = async (req, res) => {
-  // const user_id = req.user_id;  // User ID from JWT (Authenticated User)
-  const {user_id} = req.body;
+  const user_id = req.user_id;  // User ID from JWT (Authenticated User)
+  // const {user_id} = req.body;
 
   try {
 
@@ -54,7 +54,7 @@ exports.getBalance = async (req, res) => {
 
 
 exports.getHistory = async (req, res) => {
-  const { user_id } = req.body; // User ID from JWT (Authenticated User)
+  const user_id = req.user_id; // User ID from JWT (Authenticated User)
 
   try {
     // Step 1: Check if the transaction history is cached in Redis

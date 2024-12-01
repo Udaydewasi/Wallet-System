@@ -1,3 +1,4 @@
+const { loggerPlugin } = require("http-proxy-middleware");
 const logger = require("../../../logs/logger");
 const { query } = require("../config/db"); // PostgreSQL query function
 
@@ -6,13 +7,13 @@ exports.createWallet = async (req, res) => {
     // Extract user_id from the request body (since you're passing it from Postman)
     const user_id = req.user_id;
 
-    logger.log("Creating wallet for user:", user_id);
+    logger.info(`Creating wallet for user: ${user_id}`);
 
     // Check if the wallet already exists for the user
     const existingWalletResult = await query("SELECT * FROM wallets WHERE user_id = $1", [user_id]);
-
+    logger.info("code working stage1 wallet");
     if (existingWalletResult.rows.length > 0) {
-      logger.log("Wallet already exists for this user");
+      logger.info("Wallet already exists for this user");
       return res.status(400).json({ message: "Wallet already exists" });
     }
 
@@ -23,7 +24,7 @@ exports.createWallet = async (req, res) => {
     );
 
     const newWallet = newWalletResult.rows[0]; // Get the created wallet details
-    console.log("Wallet created successfully:", newWallet);
+    logger.info("Wallet created successfully:", newWallet);
 
     return res.status(201).json({
       message: "Wallet created successfully",

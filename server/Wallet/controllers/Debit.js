@@ -5,9 +5,9 @@ const redisClient = require('../config/redisClient');
 const logger = require('../../../logs/logger');
  
 exports.debitFunds = async (req, res) => {
-  const { amount, user_id, email } = req.body;  // Amount to deposit
-  // const user_id = req.user_id;    // User ID from JWT (Authenticated User)
-  // const email = req.email;  
+  const { amount } = req.body;  // Amount to deposit
+  const user_id = req.user_id;    // User ID from JWT (Authenticated User)
+  const email = req.email;  
 
   const Amount = Number(amount);
   // Validate the amount
@@ -79,15 +79,15 @@ exports.debitFunds = async (req, res) => {
     logger.info('Balance deposited and Redis cache updated');
 
     //mail to inform to account holder
-    // await mailSender(
-    //   email,
-    //   `Payment Debited`,
-    //   transactionEmail(
-    //     'Debited',
-    //     amount,
-    //     user_id
-    //   )
-    // );
+    await mailSender(
+      email,
+      `Payment Debited`,
+      transactionEmail(
+        'Debited',
+        amount,
+        user_id
+      )
+    );
     process.on('exit', () => {
       logger.info('Closing Redis connection...');
       redisClient.quit();

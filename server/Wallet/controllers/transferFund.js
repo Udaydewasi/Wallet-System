@@ -6,7 +6,11 @@ const { transactionEmail } = require('../mailTemplate/transaction');
 const { getIO } = require('../utils/socket'); // Socket.IO instance
 
 exports.transferFunds = async (req, res) => {
-  const { sender_id, receiver_id, amount, senderEmail, receiverEmail } = req.body; // Sender, Receiver, and Amount
+  const { receiver_id, amount, receiverEmail } = req.body; // Receiver, and Amount
+  const sender_id = req.user_id;
+  const senderEmail = req.email;
+
+  
   const Amount = Number(amount);
 
   // Validate input

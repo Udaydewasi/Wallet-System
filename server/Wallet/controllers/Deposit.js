@@ -5,9 +5,10 @@ const { mailSender } = require('../utils/mailSender');
 const { transactionEmail } = require('../mailTemplate/transaction');
 
 exports.depositFunds = async (req, res) => {
-  const { amount, user_id, email } = req.body;  // Amount to deposit
+  const { amount} = req.body;  // Amount to deposit
   const Amount = Number(amount); // Convert amount to number
-
+  const user_id = req.user_id;
+  const email = req.email;
   // Validate the amount
   if (!Amount || Amount <= 0) {
     return res.status(400).json({ success: false, message: "Invalid amount" });
@@ -74,11 +75,11 @@ exports.depositFunds = async (req, res) => {
     logger.info('Balance deposited and Redis cache updated');
 
     // Send email notification to the user
-    // await mailSender(
-    //   email,
-    //   `Payment Deposited`,
-    //   transactionEmail('Deposited', amount, user_id)
-    // );
+    await mailSender(
+      email,
+      `Payment Deposited`,
+      transactionEmail('Deposited', amount, user_id)
+    );
 
     process.on('exit', () => {
       logger.info('Closing Redis connection...');
