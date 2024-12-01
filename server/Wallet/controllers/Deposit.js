@@ -15,9 +15,6 @@ exports.depositFunds = async (req, res) => {
 
   try {
 
-    redisClient.on('connect', () => {
-      logger.info('Redis is connected and ready to use');
-    });
     logger.info("1Working till now...");
     // 1. Check if the wallet balance is cached in Redis
     const cachedBalance = await new Promise((resolve, reject) => {

@@ -1,4 +1,5 @@
 const { query, transaction } = require('../config/db'); // Import query and transaction utilities
+const redisClient = require('../config/redisClient'); // Redis client
 const logger = require('../../../logs/logger');
 const { mailSender } = require('../utils/mailSender');
 const { transactionEmail } = require('../mailTemplate/transaction');
@@ -31,24 +32,45 @@ exports.transferFunds = async (req, res) => {
   try {
     // Use a transaction to ensure atomicity
     await transaction(async (client) => {
-      // 1. Check sender's wallet balance
-      const senderResult = await query('SELECT balance FROM wallets WHERE user_id = $1 FOR UPDATE', [sender_id]);
-      if (senderResult.rows.length === 0) {
-        throw new Error("Sender's wallet not found");
+      // 1. Check sender's wallet balance (from Redis first)
+      const cachedSenderBalance = await new Promise((resolve, reject) => {
+        redisClient.get(`wallet_balance:${sender_id}`, (err, data) => {
+          if (err) reject(err);
+          resolve(data); // Resolve with cached balance if available
+        });
+      });
+
+      let senderBalance = cachedSenderBalance ? Number(cachedSenderBalance) : null;
+
+      if (senderBalance === null) {
+        const senderResult = await query('SELECT balance FROM wallets WHERE user_id = $1 FOR UPDATE', [sender_id]);
+        if (senderResult.rows.length === 0) {
+          throw new Error("Sender's wallet not found");
+        }
+        senderBalance = Number(senderResult.rows[0].balance);
       }
 
-      const senderBalance = Number(senderResult.rows[0].balance);
       if (senderBalance < Amount) {
         throw new Error("Insufficient funds in sender's wallet");
       }
 
-      // 2. Check if receiver's wallet exists
-      const receiverResult = await query('SELECT balance FROM wallets WHERE user_id = $1 FOR UPDATE', [receiver_id]);
-      if (receiverResult.rows.length === 0) {
-        throw new Error("Receiver's wallet not found");
-      }
+      // 2. Check receiver's wallet balance (from Redis first)
+      const cachedReceiverBalance = await new Promise((resolve, reject) => {
+        redisClient.get(`wallet_balance:${receiver_id}`, (err, data) => {
+          if (err) reject(err);
+          resolve(data); // Resolve with cached balance if available
+        });
+      });
 
-      const receiverBalance = Number(receiverResult.rows[0].balance);
+      let receiverBalance = cachedReceiverBalance ? Number(cachedReceiverBalance) : null;
+
+      if (receiverBalance === null) {
+        const receiverResult = await query('SELECT balance FROM wallets WHERE user_id = $1 FOR UPDATE', [receiver_id]);
+        if (receiverResult.rows.length === 0) {
+          throw new Error("Receiver's wallet not found");
+        }
+        receiverBalance = Number(receiverResult.rows[0].balance);
+      }
 
       // 3. Deduct amount from sender's wallet
       const newSenderBalance = senderBalance - Amount;
@@ -71,7 +93,11 @@ exports.transferFunds = async (req, res) => {
       const senderTransactionId = senderTransaction.rows[0].id;
       const receiverTransactionId = receiverTransaction.rows[0].id;
 
-      // 6. Notify clients via Socket.IO
+      // 6. Update Redis cache for both sender and receiver
+      redisClient.setex(`wallet_balance:${sender_id}`, 300, newSenderBalance); // Cache for 5 minutes
+      redisClient.setex(`wallet_balance:${receiver_id}`, 300, newReceiverBalance);
+
+      // 7. Notify clients via Socket.IO
       const io = getIO();
       io.emit('walletUpdated', {
         sender_id,
@@ -80,19 +106,19 @@ exports.transferFunds = async (req, res) => {
         receiver_balance: newReceiverBalance,
       });
 
-    
+      // 8. Send email notifications
       if (senderEmail) {
         mailSender(
           senderEmail,
           `Funds Transferred`,
           transactionEmail('Debited', Amount, sender_id)
         );
-      }  
+      }
       if (receiverEmail) {
         mailSender(
           receiverEmail,
           `Funds Received`,
-          transactionEmail('Credited',Amount, receiver_id)
+          transactionEmail('Credited', Amount, receiver_id)
         );
       }
 

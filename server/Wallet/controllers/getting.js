@@ -1,3 +1,4 @@
+const logger = require('../../../logs/logger');
 const { query } = require('../config/db');  // Import query from the db config
 const redisClient = require('../config/redisClient');
 
@@ -51,27 +52,54 @@ exports.getBalance = async (req, res) => {
 };
 
 
+
 exports.getHistory = async (req, res) => {
-  const {user_id} = req.body;  // User ID from JWT (Authenticated User)
+  const { user_id } = req.body; // User ID from JWT (Authenticated User)
 
   try {
-    // 1. Fetch the wallet balance for the given userId
-    const result = await query('SELECT balance FROM wallets WHERE user_id = $1', [user_id]);
+    // Step 1: Check if the transaction history is cached in Redis
+    const cachedHistory = await new Promise((resolve, reject) => {
+      redisClient.get(`transaction_history:${user_id}`, (err, data) => {
+        if (err) reject(err);
+        resolve(data); // Return cached data if available
+      });
+    });
 
-    // 2. If wallet not found
-    if (result.rows.length === 0) {
+    if (cachedHistory) {
+      logger.info('Transaction history retrieved from Redis cache');
+      return res.status(200).json({
+        success: true,
+        transaction: JSON.parse(cachedHistory), // Parse cached data
+      });
+    }
+
+    // Step 2: Fetch wallet balance to verify user existence
+    const walletResult = await query('SELECT balance FROM wallets WHERE user_id = $1', [user_id]);
+
+    if (walletResult.rows.length === 0) {
       return res.status(404).json({ success: false, message: "Wallet not found" });
     }
 
-    const transactionHistory = await query(
+    // Step 3: Fetch transaction history from the database
+    const transactionHistoryResult = await query(
       'SELECT * FROM transactions WHERE wallet_id = $1 ORDER BY created_at DESC',
       [user_id]
     );
 
-    
+    const transactionHistory = transactionHistoryResult.rows;
+
+    // Step 4: Cache the transaction history in Redis
+    redisClient.setex(
+      `transaction_history:${user_id}`,
+      300, // TTL: 300 seconds (5 minutes)
+      JSON.stringify(transactionHistory) // Store as JSON string
+    );
+
+    logger.info('Transaction history fetched from the database and cached in Redis');
+
     return res.status(200).json({
       success: true,
-      transaction: transactionHistory.rows,
+      transaction: transactionHistory,
     });
   } catch (error) {
     console.error("Error fetching wallet history:", error.message);
