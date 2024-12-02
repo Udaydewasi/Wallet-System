@@ -3,12 +3,13 @@ const {mailSender} = require('../utils/mailSender');
 const {transactionEmail} = require('../mailTemplate/transaction');
 const redisClient = require('../config/redisClient');
 const logger = require('../../../logs/logger');
+const {notifyBalanceUpdate} = require('../utils/balanceNotify');
  
 exports.debitFunds = async (req, res) => {
   const { amount } = req.body;  // Amount to deposit
   const user_id = req.user_id;    // User ID from JWT (Authenticated User)
   const email = req.email;  
-
+ 
   const Amount = Number(amount);
   // Validate the amount
   if (!Amount || Amount <= 0) {
@@ -76,7 +77,10 @@ exports.debitFunds = async (req, res) => {
     const io = require('../utils/socket').getIO(); // Get Socket.IO instance
     io.emit('walletUpdated', { user_id, balance: newBalance });
 
-    logger.info('Balance deposited and Redis cache updated');
+    logger.info('Balance debited and Redis cache updated');
+
+    //MongoDB balance update
+    await notifyBalanceUpdate(user_id, newBalance);
 
     //mail to inform to account holder
     await mailSender(

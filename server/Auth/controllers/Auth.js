@@ -4,7 +4,7 @@ const User = require("../models/User")
 const OTP = require("../models/OTP")
 const jwt = require("jsonwebtoken")
 const otpGenerator = require("otp-generator")
-const mailSender = require("../utils/mailSender")
+// const mailSender = require("../utils/mailSender")
 const logger = require("../../../logs/logger")
 // const Profile = require("../models/Profile")
 require("dotenv").config()
@@ -125,7 +125,7 @@ exports.login = async (req, res) => {
         message: `User is not Registered with Us Please SignUp to Continue`,
       })
     }
-
+    logger.info(`User emal: ${user.email}`);
     // Generate JWT token and Compare Password
     if (await bcrypt.compare(password, user.password)) {
       const token = jwt.sign(

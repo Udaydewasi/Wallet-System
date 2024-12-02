@@ -3,12 +3,15 @@ const redisClient = require('../config/redisClient');
 const logger = require('../../../logs/logger');
 const { mailSender } = require('../utils/mailSender');
 const { transactionEmail } = require('../mailTemplate/transaction');
+const {notifyBalanceUpdate} = require('../utils/balanceNotify');
 
 exports.depositFunds = async (req, res) => {
   const { amount} = req.body;  // Amount to deposit
   const Amount = Number(amount); // Convert amount to number
   const user_id = req.user_id;
   const email = req.email;
+
+  logger.info(``)
   // Validate the amount
   if (!Amount || Amount <= 0) {
     return res.status(400).json({ success: false, message: "Invalid amount" });
@@ -74,7 +77,11 @@ exports.depositFunds = async (req, res) => {
 
     logger.info('Balance deposited and Redis cache updated');
 
+    //update mongodb balance
+    await notifyBalanceUpdate(user_id, newBalance);
     // Send email notification to the user
+
+    logger.info(`email:${email}`);
     await mailSender(
       email,
       `Payment Deposited`,
@@ -87,7 +94,7 @@ exports.depositFunds = async (req, res) => {
     });
 
     return res.status(200).json({
-      success: true,
+      success: true, 
       message: `Deposited ${Amount} into wallet`,
       balance: updatedBalance,
     });

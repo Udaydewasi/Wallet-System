@@ -32,6 +32,7 @@ exports.verifyToken = async (req, res, next) => {
 			logger.info("code working stage5")
 			// Storing the decoded JWT payload in the request object for further use
 			req.user_id = decode.user_id;
+			req.email = decode.email;
 
 			logger.info(`userId: ${req.user_id}`);
 			

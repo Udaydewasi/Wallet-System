@@ -4,6 +4,7 @@ const logger = require('../../../logs/logger');
 const { mailSender } = require('../utils/mailSender');
 const { transactionEmail } = require('../mailTemplate/transaction');
 const { getIO } = require('../utils/socket'); // Socket.IO instance
+const {notifyBalanceUpdate} = require('../utils/balanceNotify');
 
 exports.transferFunds = async (req, res) => {
   const { receiver_id, amount, receiverEmail } = req.body; // Receiver, and Amount
@@ -109,6 +110,12 @@ exports.transferFunds = async (req, res) => {
         receiver_id,
         receiver_balance: newReceiverBalance,
       });
+
+      //update mongodb balance of sender
+      notifyBalanceUpdate(sender_id, newSenderBalance);
+      //update mongodb balance of reciever
+      notifyBalanceUpdate(receiver_id, newReceiverBalance);
+
 
       // 8. Send email notifications
       if (senderEmail) {
