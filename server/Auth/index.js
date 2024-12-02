@@ -27,15 +27,14 @@ app.use(
 		credentials: true,
 	})
 );
-app.use(
-	fileUpload({
-		useTempFiles: true,
-		tempFileDir: "/tmp/",
-	})
-);
+// app.use(
+// 	fileUpload({
+// 		useTempFiles: true,
+// 		tempFileDir: "/tmp/",
+// 	})
+// );
 
-// // Connecting to cloudinary
-// cloudinaryConnect();
+app.use(fileUpload());
 
 // Setting up routes
 app.use("/api/v1/auth", userRoutes);

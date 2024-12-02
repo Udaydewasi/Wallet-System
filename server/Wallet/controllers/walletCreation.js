@@ -1,11 +1,10 @@
-const { loggerPlugin } = require("http-proxy-middleware");
 const logger = require("../../../logs/logger");
 const { query } = require("../config/db"); // PostgreSQL query function
 
 exports.createWallet = async (req, res) => {
   try {
     // Extract user_id from the request body (since you're passing it from Postman)
-    const user_id = req.user_id;
+    const { user_id } = req.body;
 
     logger.info(`Creating wallet for user: ${user_id}`);
 

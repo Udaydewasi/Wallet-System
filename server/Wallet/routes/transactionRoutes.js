@@ -13,6 +13,6 @@ router.post('/debit', verifyToken, debitFunds);
 router.post('/transfer', verifyToken, transferFunds);
 router.get('/getbalance', verifyToken, getBalance);
 router.get('/gethistory', verifyToken, getHistory);
-router.post('/walletCreation', verifyToken, createWallet);
+router.post('/walletcreation', createWallet);
  
 module.exports = router;

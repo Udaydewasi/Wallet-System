@@ -1,4 +1,6 @@
 const { uploadImageToS3 } = require('../utils/s3Uploader');
+const logger = require("../../../logs/logger");
+const User = require('../models/User');
 
 
 exports.getAllUserDetails = async (req, res) => {
@@ -22,17 +24,36 @@ exports.getAllUserDetails = async (req, res) => {
 
 exports.updateDisplayPicture = async (req, res) => {
   try {
+    logger.info("working stage1");
+    const {userId} = req.body;
     const displayPicture = req.files.displayPicture;
-    const userId = req.user.id;
+    logger.info(`displayPicture: ${JSON.stringify(displayPicture)}`);
 
+    // If displayPicture.data is already a Buffer, no need to convert it
+    const fileBuffer = displayPicture.data;
+    
+    logger.info(`fileBuffer length: ${fileBuffer.length}`);
+    // if (!req.files || !req.files.displayPicture) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "No picture attachted, please attach",
+    //   }); 
+    // }
+
+    const user = await User.findById(userId);
+
+    logger.info(`UserIdfromDB: ${user}`);
+
+    logger.info(`displayPicture: ${displayPicture} and ${userId}`);
+    logger.info("working stage 3");
     // Upload image to S3
     const imageUrl = await uploadImageToS3(
       displayPicture,
-      process.env.FOLDER_NAME // S3 folder name
+      process.env.FOLDER_NAME || '' // S3 folder name
     );
 
+    logger.info("working stage 4");
     console.log(imageUrl);
-
     // Update user profile with the new image URL
     const updatedProfile = await User.findByIdAndUpdate(
       userId,

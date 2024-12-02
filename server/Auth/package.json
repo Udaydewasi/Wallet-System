@@ -4,13 +4,14 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon --exec node --no-warnings index.js"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "aws-sdk": "^2.1692.0",
+    "axios": "^1.7.8",
     "bcrypt": "^5.1.1",
     "cloudinary": "^2.5.1",
     "cookie-parser": "^1.4.7",

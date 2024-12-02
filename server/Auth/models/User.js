@@ -33,13 +33,7 @@ const userSchema = new mongoose.Schema(
     image: {
       type: String,
     },
-    WalletBalance: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Wallet",
-      },
-    ],
-
+    walletBalance: { type: Number, default: 0 }
     // Add timestamps for when the document is created and last modified
   },
   { timestamps: true }

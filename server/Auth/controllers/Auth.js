@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt")
+const axios = require('axios');
 const User = require("../models/User")
 const OTP = require("../models/OTP")
 const jwt = require("jsonwebtoken")
@@ -81,8 +82,6 @@ exports.signup = async (req, res) => {
       password: hashedPassword,
       image: "",
     })
-
-    //Wallet creation logic will be here.....................
     
 
     return res.status(200).json({
@@ -133,7 +132,7 @@ exports.login = async (req, res) => {
         { user_id: user._id, email: user.email},
         process.env.JWT_SECRET,
         {
-          expiresIn: "0.1h",
+          expiresIn: "1h",
         }
       )
 
@@ -142,7 +141,7 @@ exports.login = async (req, res) => {
       user.password = undefined
       // Set cookie for token and return success response
       const options = {
-        expires: new Date(Date.now() + 6 * 60* 1000),//3 * 24 * 60 * 60 * 1000
+        expires: new Date(Date.now() + 60 * 60* 1000),//3 * 24 * 60 * 60 * 1000
         httpOnly: true,
       }
       res.cookie("token", token, options).status(200).json({
@@ -150,7 +149,20 @@ exports.login = async (req, res) => {
         token,
         user,
         message: `User Login Success`,
-      })
+      });
+
+      //wallet creation logic when user login first time after the signup
+      // if (!user.wallet) {
+        // Call the Wallet service to create a wallet for the user
+        try {
+          await axios.post('http://localhost:3000/walletgate/api/v1/wallet/walletcreation', {
+            user_id: user._id,  // Send user_id to create a wallet for the logged-in user
+          });
+          logger.info(`Wallet created for user: ${user._id}`);
+        } catch (error) {
+          logger.error('Error creating wallet:', error.message);
+        }
+      // }
     } else {
       return res.status(401).json({
         success: false,
