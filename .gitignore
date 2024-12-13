@@ -8,3 +8,7 @@ logs/
 .env
 
 Kafka/
+
+Dockerfile
+
+.dockerignore
