@@ -25,7 +25,11 @@ exports.getAllUserDetails = async (req, res) => {
 exports.updateDisplayPicture = async (req, res) => {
   try {
     logger.info("working stage1");
-    const {userId} = req.body;
+    const id = req.user.user_id;
+
+
+    logger.info(`userId : ${req.user.user_id}`);
+
     const displayPicture = req.files.displayPicture;
     logger.info(`displayPicture: ${JSON.stringify(displayPicture)}`);
 
@@ -33,18 +37,18 @@ exports.updateDisplayPicture = async (req, res) => {
     const fileBuffer = displayPicture.data;
     
     logger.info(`fileBuffer length: ${fileBuffer.length}`);
-    // if (!req.files || !req.files.displayPicture) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: "No picture attachted, please attach",
-    //   }); 
-    // }
+    if (!req.files || !req.files.displayPicture) {
+      return res.status(400).json({
+        success: false,
+        message: "No picture attachted, please attach",
+      }); 
+    }
 
-    const user = await User.findById(userId);
+    const user = await User.findById(id);
 
     logger.info(`UserIdfromDB: ${user}`);
 
-    logger.info(`displayPicture: ${displayPicture} and ${userId}`);
+    logger.info(`displayPicture: ${displayPicture} and ${id}`);
     logger.info("working stage 3");
     // Upload image to S3
     const imageUrl = await uploadImageToS3(
@@ -53,14 +57,13 @@ exports.updateDisplayPicture = async (req, res) => {
     );
 
     logger.info("working stage 4");
-    console.log(imageUrl);
     // Update user profile with the new image URL
     const updatedProfile = await User.findByIdAndUpdate(
-      userId,
+      id,
       { image: imageUrl },
       { new: true }
     );
-
+    
     res.status(200).json({
       success: true,
       message: `Image updated successfully`,

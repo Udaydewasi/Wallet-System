@@ -3,11 +3,19 @@ const http = require('http'); // To create an HTTP server
 const transactionRoutes = require('./routes/transactionRoutes');
 const { connectDB } = require('./config/db'); // PostgreSQL connection
 const { init } = require('./utils/socket'); // Import the socket initializer
-const logger = require('../../logs/logger');
+const logger = require('logger');
+
+const cors = require('cors');
 
 require('dotenv').config();
 
 const app = express();
+app.use(cors({ 
+  origin: "http://localhost:3000", // Adjust as per your frontend URL
+  credentials: true,
+  allowedHeaders: ["Authorization", "Content-Type"] }));
+
+
 const server = http.createServer(app); // Attach Express to an HTTP server
 
 app.use(express.json()); // Middleware to parse JSON requests

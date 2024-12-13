@@ -29,7 +29,7 @@ exports.debitFunds = async (req, res) => {
     let walletBalance = 0;
 
     // If balance is found in Redis cache, use it
-    if (cachedBalance) {
+    if (cachedBalance && !isNaN(Number(cachedBalance))) {
       walletBalance = Number(cachedBalance); // Convert string to number
       logger.info('Wallet balance retrieved from Redis cache');
     } else {
@@ -79,6 +79,7 @@ exports.debitFunds = async (req, res) => {
 
     logger.info('Balance debited and Redis cache updated');
 
+    logger.info(`${Amount}`);
     //MongoDB balance update
     await notifyBalanceUpdate(user_id, newBalance);
 

@@ -2,17 +2,19 @@
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const User = require("../models/User");
+const logger = require("../../../logs/logger");
 // Configuring dotenv to load environment variables from .env file
 dotenv.config();
 
 // This function is used as middleware to authenticate user requests
 exports.auth = async (req, res, next) => {
 	try {
+		logger.info("Entered in the middleware");
 		// Extracting JWT from request cookies, body or header
 		const token =
 			req.cookies.token ||
 			req.body.token ||
-			req.header("Authorization").replace("Bearer ", "");
+			req.header("Authorization").replace(/^Bearer\s+"?/, "").replace(/"?$/, "");
 
 		// If JWT is missing, return 401 Unauthorized response
 		if (!token) {

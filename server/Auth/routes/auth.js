@@ -2,6 +2,7 @@
 const express = require("express");
 const router = express.Router();
 const {updateDisplayPicture} = require('../controllers/Profile');
+const {fetchImage} = require('../controllers/fetchImage');
 // Import the required controllers and middleware functions
 const {
   login,
@@ -9,6 +10,8 @@ const {
   sendotp,
 } = require("../controllers/Auth")
 const {updateBalance} = require("../controllers/updateBalance");
+
+const { auth } = require('../middlewares/auth');
 
 // Routes for Login, Signup, OtpSend, ImageUpload and BalanceUpdate
 
@@ -26,7 +29,9 @@ router.post("/signup", signup)
 router.post("/sendotp", sendotp)
 
 //Route for updating or uploading image
-router.put("/image", updateDisplayPicture);
+router.put("/image", auth, updateDisplayPicture);
+
+router.get("/profileimage", auth, fetchImage);
 
 //Route for updating the balance from MongoDB
 router.put("/updatebalance", updateBalance);

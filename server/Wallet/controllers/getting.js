@@ -4,49 +4,48 @@ const redisClient = require('../config/redisClient');
 
 
 exports.getBalance = async (req, res) => {
-  const user_id = req.user_id;  // User ID from JWT (Authenticated User)
-  // const {user_id} = req.body;
+  const user_id = req.user_id;  // User ID from JWT
+  logger.info("Entered in the getBalance");
 
   try {
-
-    // Check if wallet balance is cached in Redis
-    const cachedBalance = await new Promise((resolve, reject) => {
-      redisClient.get(`wallet_balance:${user_id}`, (err, data) => {
-        if (err) reject(err);
-        resolve(data);  // Return the cached balance (if exists)
-      });
-    });
-
-    if (cachedBalance) {
-      // If cached balance is found, return it
+    // Check Redis cache
+    const cachedBalance = await redisClient.get(`wallet_balance:${user_id}`);
+    if (cachedBalance && !isNaN(cachedBalance)) {
+      logger.info(`Cache hit: ${cachedBalance}`);
       return res.status(200).json({
         success: true,
-        balance: Number(cachedBalance), // Convert from string to number
-        source: 'cache', // Indicate that this came from Redis
+        balance: Number(cachedBalance),
+        source: 'cache',
+        id : user_id,
       });
     }
 
-    // 1. Fetch the wallet balance for the given userId
+    logger.info("stage 1");
+    // Fetch balance from the database
     const result = await query('SELECT balance FROM wallets WHERE user_id = $1', [user_id]);
 
-    // 2. If wallet not found
-    if (result.rows.length === 0) {
-      return res.status(404).json({ success: false, message: "Wallet not found" });
-    }
+      if (result.rows.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "Wallet not found"
+        });
+      }
 
-    // 3. Return the wallet balance
-    const balance = result.rows[0].balance;
+    logger.info("stage 2");
+    const balance = Number(result.rows[0].balance);
+    
+    // Cache balance in Redis
+    redisClient.setex(`wallet_balance:${user_id}`, 60, String(balance));
 
-    // Cache the balance in Redis with a TTL (Time to Live) of 60 seconds
-    redisClient.setex(`wallet_balance:${user_id}`, 60, balance);
-
+    logger.info(`Fetched balance: ${balance}`);
     return res.status(200).json({
       success: true,
       balance: balance,
       source: 'database',
+      id : user_id,
     });
   } catch (error) {
-    console.error("Error fetching wallet balance:", error.message);
+    logger.error("Error fetching wallet balance:", error.message);
     return res.status(500).json({ success: false, message: "Error fetching wallet balance" });
   }
 };
@@ -54,18 +53,19 @@ exports.getBalance = async (req, res) => {
 
 
 exports.getHistory = async (req, res) => {
+  console.log("Entered in the history");
   const user_id = req.user_id; // User ID from JWT (Authenticated User)
 
   try {
     // Step 1: Check if the transaction history is cached in Redis
-    const cachedHistory = await new Promise((resolve, reject) => {
+    const cachedHistory = new Promise((resolve, reject) => {
       redisClient.get(`transaction_history:${user_id}`, (err, data) => {
         if (err) reject(err);
         resolve(data); // Return cached data if available
       });
     });
 
-    if (cachedHistory) {
+    if (cachedHistory && !isNaN(cachedHistory)) {
       logger.info('Transaction history retrieved from Redis cache');
       return res.status(200).json({
         success: true,

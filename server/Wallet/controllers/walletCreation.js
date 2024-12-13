@@ -3,6 +3,7 @@ const { query } = require("../config/db"); // PostgreSQL query function
 
 exports.createWallet = async (req, res) => {
   try {
+    logger.info("Entered in the walletcreation");
     // Extract user_id from the request body (since you're passing it from Postman)
     const { user_id } = req.body;
 
@@ -30,7 +31,7 @@ exports.createWallet = async (req, res) => {
       wallet: newWallet
     });
   } catch (error) {
-    console.error("Error creating wallet:", error.message);
+    logger.error("Error creating wallet:", error.message);
     return res.status(500).json({ error: error.message });
   }
 };

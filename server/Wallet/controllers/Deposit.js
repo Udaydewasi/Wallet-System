@@ -6,12 +6,12 @@ const { transactionEmail } = require('../mailTemplate/transaction');
 const {notifyBalanceUpdate} = require('../utils/balanceNotify');
 
 exports.depositFunds = async (req, res) => {
+  logger.info("Entered in the Deposit");
   const { amount} = req.body;  // Amount to deposit
   const Amount = Number(amount); // Convert amount to number
   const user_id = req.user_id;
   const email = req.email;
-
-  logger.info(``)
+logger.info(`user_id: ${user_id}, email : ${email}`);
   // Validate the amount
   if (!Amount || Amount <= 0) {
     return res.status(400).json({ success: false, message: "Invalid amount" });
@@ -33,7 +33,7 @@ exports.depositFunds = async (req, res) => {
     let walletBalance = 0;
 
     // If balance is found in Redis cache, use it
-    if (cachedBalance) {
+    if (cachedBalance && !isNaN(Number(cachedBalance))) {
       walletBalance = Number(cachedBalance); // Convert string to number
       logger.info('Wallet balance retrieved from Redis cache');
     } else {
@@ -52,7 +52,7 @@ exports.depositFunds = async (req, res) => {
 
     // 3. Update the wallet balance by adding the deposit amount
     const newBalance = walletBalance + Amount;
-
+    logger.info(`new: ${newBalance}, wallet: ${walletBalance}, Amount : ${Amount}, amount: ${amount}`);
     // 4. Update the wallet balance in the database
     const updateResult = await query(
       'UPDATE wallets SET balance = $1 WHERE user_id = $2 RETURNING balance',

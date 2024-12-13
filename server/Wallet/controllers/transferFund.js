@@ -7,26 +7,34 @@ const { getIO } = require('../utils/socket'); // Socket.IO instance
 const {notifyBalanceUpdate} = require('../utils/balanceNotify');
 
 exports.transferFunds = async (req, res) => {
+  logger.info("Entered in the TransferFunds");
   const { receiver_id, amount, receiverEmail } = req.body; // Receiver, and Amount
   const sender_id = req.user_id;
   const senderEmail = req.email;
 
+  logger.info("stagw 1");
+
   
   const Amount = Number(amount);
-
+  logger.info(`s: ${sender_id}, r : ${receiver_id}`);
   // Validate input
   if (!sender_id || !receiver_id) {
+    logger.info("yha pr");
     return res.status(400).json({ 
         success: false, 
         message: "Sender and receiver IDs are required" 
     });
   }
+
+  logger.info("stagw 2");
   if (sender_id === receiver_id) {
     return res.status(400).json({ 
         success: false, 
         message: "Cannot transfer funds to the same wallet" 
     });
   }
+
+  logger.info("stagw 3");
   if (!Amount || Amount <= 0) {
     return res.status(400).json({ 
         success: false, 
@@ -45,16 +53,19 @@ exports.transferFunds = async (req, res) => {
         });
       });
 
-      let senderBalance = cachedSenderBalance ? Number(cachedSenderBalance) : null;
 
-      if (senderBalance === null) {
+      // let senderBalance = cachedSenderBalance ? Number(cachedSenderBalance) : null;
+      let senderBalance;
+      if(cachedSenderBalance && !isNaN(Number(cachedSenderBalance))){
+        senderBalance = Number(cachedSenderBalance);
+      }else {
         const senderResult = await query('SELECT balance FROM wallets WHERE user_id = $1 FOR UPDATE', [sender_id]);
         if (senderResult.rows.length === 0) {
           throw new Error("Sender's wallet not found");
         }
         senderBalance = Number(senderResult.rows[0].balance);
       }
-
+      
       if (senderBalance < Amount) {
         throw new Error("Insufficient funds in sender's wallet");
       }
@@ -66,10 +77,14 @@ exports.transferFunds = async (req, res) => {
           resolve(data); // Resolve with cached balance if available
         });
       });
+      
+      logger.info("stage1");
 
-      let receiverBalance = cachedReceiverBalance ? Number(cachedReceiverBalance) : null;
-
-      if (receiverBalance === null) {
+      // let receiverBalance = cachedReceiverBalance ? Number(cachedReceiverBalance) : null;
+      let receiverBalance;
+      if(cachedReceiverBalance && !isNaN(Number(cachedReceiverBalance))){
+        receiverBalance = Number(cachedReceiverBalance);
+      }else{
         const receiverResult = await query('SELECT balance FROM wallets WHERE user_id = $1 FOR UPDATE', [receiver_id]);
         if (receiverResult.rows.length === 0) {
           throw new Error("Receiver's wallet not found");

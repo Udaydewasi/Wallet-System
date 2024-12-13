@@ -1,5 +1,5 @@
 const nodemailer = require("nodemailer");
-const logger = require("../../../logs/logger");
+const logger = require("logger");
 
 exports.mailSender = async (email, title, body) => {
   try {

@@ -132,7 +132,7 @@ exports.login = async (req, res) => {
         { user_id: user._id, email: user.email},
         process.env.JWT_SECRET,
         {
-          expiresIn: "1h",
+          expiresIn: "6h",
         }
       )
 
@@ -155,7 +155,7 @@ exports.login = async (req, res) => {
       // if (!user.wallet) {
         // Call the Wallet service to create a wallet for the user
         try {
-          await axios.post('http://localhost:3000/walletgate/api/v1/wallet/walletcreation', {
+          await axios.post('http://localhost:4001/api/v1/wallet/walletcreation', {
             user_id: user._id,  // Send user_id to create a wallet for the logged-in user
           });
           logger.info(`Wallet created for user: ${user._id}`);
