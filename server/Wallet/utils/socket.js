@@ -1,4 +1,4 @@
-const logger = require('logger');
+const logger = require('../../../logs/logger');
 
 let io;
 
@@ -8,7 +8,7 @@ module.exports = {
     io = new Server(server, {
       cors: {
         origin: '*', // Update for production to allow specific origins
-        methods: ['GET', 'POST'],
+        methods: ['GET', 'POST', 'PUT'],
       },
     });
 

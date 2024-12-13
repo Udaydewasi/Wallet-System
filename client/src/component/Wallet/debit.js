@@ -1,12 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { apiConnector } from "../../services/apiConnector";
 import { walletEndpoints } from "../../services/api";
 import toast from "react-hot-toast";
+import { connectWebSocket, sendMessage } from "../../services/websocketService";
 
-const {DEBIT_PAYMENT_API} = walletEndpoints;
+const { DEBIT_PAYMENT_API } = walletEndpoints;
 
 function Debit() {
   const [amount, setAmount] = useState("");
+  const [balance, setBalance] = useState(0);
+
+  useEffect(() => {
+    // Connect to WebSocket when the component mounts
+    const socket = connectWebSocket();
+
+    // Listen for wallet update event to update the balance
+    socket.on("walletUpdated", (data) => {
+      console.log("Wallet updated:", data);
+      setBalance(data.balance); // Update balance with the new balance received from server
+    });
+
+    // Cleanup on component unmount
+    return () => {
+      socket.off("walletUpdated");
+    };
+  }, []);
 
   const handleDebit = async () => {
     if (amount <= 0) {
@@ -14,14 +32,19 @@ function Debit() {
       return;
     }
     try {
+      // Send API request to debit funds
       await apiConnector(
-        "POST",DEBIT_PAYMENT_API,
+        "POST",
+        DEBIT_PAYMENT_API,
         { amount: Number(amount) },
         { Authorization: `Bearer ${localStorage.getItem("token")}` }
       );
-      // alert("Debit successful!");
+
+      // Emit WebSocket event to update balance on the server side
+      sendMessage("debit", { amount: Number(amount) });
+
       toast.success("Payment Debited successfully");
-      setAmount("");
+      setAmount(""); // Clear the input field
     } catch (error) {
       console.error("Error in debit:", error);
       toast.error("Payment not Debited");
@@ -31,6 +54,7 @@ function Debit() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
       <h1 className="text-3xl font-bold mb-6">Debit Funds</h1>
+      <p>Current Balance: ${balance}</p> {/* Display the current balance */}
       <input
         type="number"
         value={amount}
