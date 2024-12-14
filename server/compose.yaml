@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  gateway-service:
+    image: node:lts-alpine
+    working_dir: /app
+    command: sh -c "npm install && node gateway.js"
+    build:
+      context: ./Gateway  # Point to the Gateway directory
+    ports:
+      - 127.0.0.1:3000:3000         # Allow external connections
