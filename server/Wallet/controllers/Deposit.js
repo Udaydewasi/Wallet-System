@@ -1,6 +1,6 @@
 const { query } = require('../config/db');  
 const redisClient = require('../config/redisClient'); 
-const logger = require('../../../logs/logger');
+const logger = require('../logs/logger');
 const { mailSender } = require('../utils/mailSender');
 const { transactionEmail } = require('../mailTemplate/transaction');
 const {notifyBalanceUpdate} = require('../utils/balanceNotify');

@@ -1,5 +1,5 @@
 const axios = require("axios");
-const logger = require('../../../logs/logger');
+const logger = require('../logs/logger');
 
 exports.notifyBalanceUpdate = async (user_id, updatedBalance) => {
   try {

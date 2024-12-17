@@ -1,4 +1,4 @@
-const logger = require("../../../logs/logger");
+const logger = require("../logs/logger");
 const { query } = require("../config/db"); // PostgreSQL query function
 
 exports.createWallet = async (req, res) => {

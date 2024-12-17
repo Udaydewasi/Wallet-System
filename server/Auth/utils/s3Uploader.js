@@ -1,7 +1,7 @@
 const s3 = require('../config/s3Client');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid'); // To generate unique filenames
-const logger = require('../../../logs/logger');
+const logger = require('../logs/logger');
 /**
  * Uploads an image to S3
  * @param {Object} file - The image file to upload

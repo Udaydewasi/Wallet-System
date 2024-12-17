@@ -1,5 +1,5 @@
 const User = require("../models/User");
-const logger = require('../../../logs/logger'); 
+const logger = require('../logs/logger'); 
 
 exports.updateBalance = async (req, res) => {
   try {

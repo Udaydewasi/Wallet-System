@@ -1,6 +1,6 @@
 const { query, transaction } = require('../config/db'); // Import query and transaction utilities
 const redisClient = require('../config/redisClient'); // Redis client
-const logger = require('../../../logs/logger');
+const logger = require('../logs/logger');
 const { mailSender } = require('../utils/mailSender');
 const { transactionEmail } = require('../mailTemplate/transaction');
 const { getIO } = require('../utils/socket'); // Socket.IO instance

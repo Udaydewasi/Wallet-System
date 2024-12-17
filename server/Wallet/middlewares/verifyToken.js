@@ -1,6 +1,6 @@
 // Importing required modules
 const jwt = require("jsonwebtoken");
-const logger = require("../../../logs/logger");
+const logger = require("../logs/logger");
 require('dotenv').config();
 
 

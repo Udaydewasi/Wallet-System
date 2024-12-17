@@ -2,7 +2,7 @@ const { query } = require('../config/db');  // Import query from your db config
 const {mailSender} = require('../utils/mailSender');
 const {transactionEmail} = require('../mailTemplate/transaction');
 const redisClient = require('../config/redisClient');
-const logger = require('../../../logs/logger');
+const logger = require('../logs/logger');
 const {notifyBalanceUpdate} = require('../utils/balanceNotify');
  
 exports.debitFunds = async (req, res) => {

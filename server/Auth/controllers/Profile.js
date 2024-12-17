@@ -1,5 +1,5 @@
 const { uploadImageToS3 } = require('../utils/s3Uploader');
-const logger = require("../../../logs/logger");
+const logger = require("../logs/logger");
 const User = require('../models/User');
 
 

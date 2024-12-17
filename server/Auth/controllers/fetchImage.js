@@ -1,5 +1,5 @@
 const User = require("../models/User");
-const logger = require("../../../logs/logger");
+const logger = require("../logs/logger");
 
 const fetchImage = async(req, res) =>{
     const id = req.user.user_id;

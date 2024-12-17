@@ -1,4 +1,4 @@
-const logger = require('../../../logs/logger');
+const logger = require('../logs/logger');
 const { query } = require('../config/db');  // Import query from the db config
 const redisClient = require('../config/redisClient');
 
