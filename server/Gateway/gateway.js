@@ -2,7 +2,7 @@ const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const rateLimit = require('express-rate-limit');
 const axios = require('axios');
-const logger = require('../logs/logger');
+const logger = require('./logs/logger');
 require('dotenv').config(); 
 
 // Create the express app
