@@ -43,7 +43,7 @@ app.use('/walletgate', createProxyMiddleware({
 
 // Health check endpoint
 app.get('/', (req, res) => {
-  res.json({ message: 'API Gateway is running! You can test' });
+  res.json({ message: 'API Gateway is running!' });
 });
 
 // Start the Gateway service
