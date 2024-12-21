@@ -24,7 +24,7 @@ jobs:
 
     - name: Build the Docker Image
       run: |
-        docker build server/Gateway/. --tag swan/gateway:latest
+        docker build server/Gateway/. --tag 842676019334.dkr.ecr.ap-south-1.amazonaws.com/swan/gateway:latest
 
     - name: Push Docker Image to AWS ECR
       run: |
