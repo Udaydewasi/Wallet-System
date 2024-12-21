@@ -24,12 +24,9 @@ jobs:
 
     - name: Build the Docker Image
       run: |
-        IMAGE_TAG=$(date +%s)
-        docker build server/Gateway/. --tag 842676019334.dkr.ecr.ap-south-1.amazonaws.com/swan-gateway-img:$IMAGE_TAG
+        docker build server/Gateway/. --tag swan/gateway:latest
 
-    # Step 4: Push the Docker image to AWS ECR
     - name: Push Docker Image to AWS ECR
       run: |
-        IMAGE_TAG=$(date +%s)
-        docker push 842676019334.dkr.ecr.$AWS_REGION.amazonaws.com/swan-gateway-img:$IMAGE_TAG
+        docker push 842676019334.dkr.ecr.$AWS_REGION.amazonaws.com/swan/gateway:latest
 
