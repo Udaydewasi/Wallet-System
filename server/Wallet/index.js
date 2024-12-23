@@ -27,7 +27,7 @@ connectDB();
 app.get('/', (req, res) => {
   res.json({
     success: true,
-    message: 'Server is up and running...',
+    message: 'Server is up and running... start',
   });
 });
 

@@ -1,0 +1,32 @@
+name: Gateway CD
+
+on:
+  workflow_run:
+    workflows: ["Gateway Image CI"]
+    types:
+      - completed
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+    - name: Pull Gateway Image
+      run: docker pull 842676019334.dkr.ecr.ap-south-1.amazonaws.com/swan/gateway:latest
+
+    - name: Stop Previous Gateway
+      run: |
+        docker rm -f gateway-container || true
+
+    - name: Create an env file
+      run: |
+        touch gateway.env
+        echo "${{ secrets.GATEWAY_ENV }}" >> gateway.env
+
+    - name: Run the new Container
+      run: |
+        docker run -d -p 0.0.0.0:3000:3000 --name gateway-container --env-file=gateway.env 842676019334.dkr.ecr.ap-south-1.amazonaws.com/swan/gateway:latest
+
+    - name: Remove the env file
+      run: |
+        rm gateway.env

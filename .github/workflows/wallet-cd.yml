@@ -1,0 +1,32 @@
+name: Wallet CD
+
+on:
+  workflow_run:
+    workflows: ["Wallet Image CI"]
+    types:
+      - completed
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+    - name: Pull Auth Image
+      run: docker pull 842676019334.dkr.ecr.ap-south-1.amazonaws.com/swan/wallet:latest
+
+    - name: Stop Previous Wallet
+      run: |
+        docker rm -f wallet-container || true
+
+    - name: Create an env file
+      run: |
+        touch wallet.env
+        echo "${{ secrets.WALLET_ENV }}" >> wallet.env
+
+    - name: Run the new Container
+      run: |
+        docker run -d -p 127.0.0.1:4001:4001 --name wallet-container --env-file=wallet.env 842676019334.dkr.ecr.ap-south-1.amazonaws.com/swan/wallet:latest
+
+    - name: Remove the env file
+      run: |
+        rm wallet.env
