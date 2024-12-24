@@ -13,7 +13,7 @@ init(server);
 
 
 app.use(cors({ 
-  origin: "http://localhost:3000", // Adjust as per your frontend URL
+  origin: '*', 
   credentials: true,
   allowedHeaders: ["Authorization", "Content-Type"] 
 }));

@@ -3,8 +3,6 @@ const logger = require('../logs/logger');
 
 exports.updateBalance = async (req, res) => {
   try {
-
-    logger.info('calling to updateBalance in Mongodb');
     const { user_id, updatedBalance } = req.body;
 
     // Find the user in MongoDB and update their wallet balance

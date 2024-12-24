@@ -1,12 +1,12 @@
 import { io } from 'socket.io-client';
 
 // WebSocket connection URL
-const SOCKET_URL = 'http://127.0.0.1:4001';
+const REACT_APP_SOCKET_URL = process.env.REACT_APP_SOCKET_URL;
 let socket;
 
 export const connectWebSocket = () => {
   if (!socket) {
-    socket = io(SOCKET_URL); // Initialize WebSocket connection
+    socket = io(REACT_APP_SOCKET_URL);
 
     // Event listeners
     socket.on('connect', () => {

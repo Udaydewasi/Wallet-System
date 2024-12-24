@@ -1,6 +1,5 @@
 const AUTH_BASE_URL = process.env.REACT_APP_AUTH_BASE_URL;
 const WALLET_BASE_URL = process.env.REACT_APP_WALLET_BASE_URL;
-// const BASE_URL = `http://127.0.0.1:4000/api/v1`;
 
 // AUTH ENDPOINTS
 export const endpoints = {
@@ -19,11 +18,4 @@ export const walletEndpoints = {
   TRANSFER_PAYMENT_API: WALLET_BASE_URL + "/wallet/transfer",
   TRANSACTION_HISTORY_API: WALLET_BASE_URL+ "/wallet/gethistory",
   FETCHBALANCE_API: WALLET_BASE_URL + "/wallet/getbalance",
-  // SEND_PAYMENT_SUCCESS_EMAIL_API: WALLET_BASE_URL + "/payment/sendPaymentSuccessEmail",
 }
-
-
-
-// export const profileEndpoints = {
-//   GET_USER_DETAILS_API: AUTH_BASE_URL + "/auth/profile",
-// }

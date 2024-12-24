@@ -154,8 +154,9 @@ exports.login = async (req, res) => {
       //wallet creation logic when user login first time after the signup
       // if (!user.wallet) {
         // Call the Wallet service to create a wallet for the user
+        const WALLETCREATION_URL = process.env.WALLETCREATION_URL;
         try {
-          await axios.post('http://localhost:4001/api/v1/wallet/walletcreation', {
+          await axios.post(WALLETCREATION_URL, {
             user_id: user._id,  // Send user_id to create a wallet for the logged-in user
           });
           logger.info(`Wallet created for user: ${user._id}`);
