@@ -27,7 +27,7 @@ function Dashboard() {
       );
       const account = response.data.id; // Assuming the user ID is stored here
       setBalance(response.data.balance);
-      console.log(response.data);
+    
       setUserId(account); // Store the user ID
     } catch (error) {
       console.error("Error fetching wallet balance:", error);

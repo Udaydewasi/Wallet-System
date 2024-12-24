@@ -9,8 +9,7 @@ const {
   SENDOTP_API,
   SIGNUP_API,
   LOGIN_API
-} = endpoints
-console.log(LOGIN_API);
+} = endpoints;
 export function sendOtp(email, navigate) {
   return async (dispatch) => {
     const toastId = toast.loading("Loading...")

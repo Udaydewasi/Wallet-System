@@ -13,10 +13,13 @@ init(server);
 
 
 app.use(cors({ 
-  origin: '*', 
+  origin: "http://localhost:3001", 
   credentials: true,
-  allowedHeaders: ["Authorization", "Content-Type"] 
+  methods: ["GET", "POST", "PUT", "DELETE", "OPETIONS", "PATCH", "HEAD"],
+  allowedHeaders: ["Authorization", "Content-Type", 'Origin', 'X-Request-With', 'Accept', 'x-client-token', 'x-client-secret'], 
 }));
+
+app.options('*', cors());
 
 app.use(express.json()); // Middleware to parse JSON requests
 
