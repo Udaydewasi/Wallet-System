@@ -12,7 +12,7 @@ jobs:
 
     steps:
     - name: Pull Gateway Image
-      run: docker pull 842676019334.dkr.ecr.ap-south-1.amazonaws.com/swan/gateway:latest
+      run: sudo docker pull 842676019334.dkr.ecr.ap-south-1.amazonaws.com/swan/gateway:latest
 
     - name: Stop Previous Gateway
       run: |
